@@ -41,7 +41,7 @@ public class Plugin extends JavaPlugin implements Listener {
             World world = event.getSpawnLocation().getWorld();
             Plugin plugin = this;
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                for (int i = 0; i < 750; i++) {
+                for (int i = 0; i < 900; i++) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                                 Entity entity = world.spawnEntity(
                                         new Location(world,
@@ -57,7 +57,7 @@ public class Plugin extends JavaPlugin implements Listener {
                             });
                     count++;
                 }
-                for (int i = 0; i < 250; i++) {
+                for (int i = 0; i < 100; i++) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         Entity entity = world.spawnEntity(
                                 new Location(world,
