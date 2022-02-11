@@ -1,5 +1,5 @@
 name: TikTokVillage
 version: '${version}'
-main: com.github.mrgeotech.TikTokVillage
-api-version: 1.18
+main: com.github.mrgeotech.Plugin
+api-version: 1.12
 authors: [ MrGeoTech ]

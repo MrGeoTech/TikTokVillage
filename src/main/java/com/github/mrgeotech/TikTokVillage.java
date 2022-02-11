@@ -3,7 +3,6 @@ package com.github.mrgeotech;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +26,27 @@ public final class TikTokVillage {
         } catch (Exception ignored) {}
 
         for (int i = 0; i < 1; i++) {
-            JSONObject json = readJsonFromUrl(count);
-            if (json == null) break;
-            json.getJSONArray("comments").forEach(o -> {
-                JSONObject comment = new JSONObject(o.toString());
-                names.add(comment.getJSONObject("user").getString("nickname"));
-            });
-            count += 30;
+            try {
+                System.out.println(i);
+                JSONObject json = readJsonFromUrl(count);
+                if (json == null) break;
+                json.getJSONArray("comments").forEach(o -> {
+                    JSONObject comment = new JSONObject(o.toString());
+                    names.add(comment.getJSONObject("user").getString("nickname"));
+                });
+                count += 30;
+                if (i % 10 == 0) {
+                    save(count, names);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
+        save(count, names);
+    }
+
+    public static void save(int count, List<String> names) throws IOException {
         // Saving names to file
         StringBuilder builder = new StringBuilder();
         builder.append(count).append("\n");
@@ -44,30 +55,17 @@ public final class TikTokVillage {
         }
         BufferedWriter fileWriter = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + "/names.txt"));
         fileWriter.write(builder.toString());
-        System.out.println(builder);
         fileWriter.close();
-    }
-
-
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
     }
 
     public static JSONObject readJsonFromUrl(int count) {
         try {
-            Process process = Runtime.getRuntime().exec("curl --request GET " +
-                            "--url 'https://api.tikapi.io/comment/list?media_id=7042543887659027759&count=30&cursor=" + count + "' " +
-                            "--header 'X-ACCOUNT-KEY: D4hAHGSHyHIaUclIOpSy8YJY4SO1uEqX' " +
-                            "--header 'X-API-KEY: JAfnjxNTdoMjMn57h8imBgsopFG6nBsG' " +
-                            "--header 'accept: application/json'");
-
-            process.getInputStream().transferTo(System.out);
-            process.getErrorStream().transferTo(System.err);
+            Process process = Runtime.getRuntime().exec("C:/Users/themr/Downloads/curl-7.81.0-win64-mingw/curl-7.81.0-win64-mingw/bin/curl.exe " +
+                    "https://api.tikapi.io/comment/list?media_id=7042543887659027759&count=30&cursor=" + count +
+                    " -X GET" +
+                    " -H \"X-ACCOUNT-KEY: PAXmq8UEfa67d02WBVPhWAoVYFFM8uU2\"" +
+                    " -H \"X-API-KEY: Nu574o4oFcRbBtmouV0pF3zbxM0q1XWS\"" +
+                    " -H \"accept: application/json\"");
 
             final StringBuilder jsonText = new StringBuilder();
             Thread thread = new Thread(() -> {
