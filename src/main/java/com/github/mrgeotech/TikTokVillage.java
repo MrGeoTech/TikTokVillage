@@ -10,6 +10,7 @@ public final class TikTokVillage {
 
     public static void main(String[] args) throws IOException {
         int count = 0;
+        int errors = 0;
         List<String> names = new ArrayList<>();
 
         File file = new File(System.getProperty("user.dir"), "/names.txt");
@@ -25,7 +26,7 @@ public final class TikTokVillage {
             }
         } catch (Exception ignored) {}
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 1000; i++) {
             try {
                 System.out.println(i);
                 JSONObject json = readJsonFromUrl(count);
@@ -40,10 +41,12 @@ public final class TikTokVillage {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                errors++;
             }
         }
 
         save(count, names);
+        System.err.println("Total Errors: " + errors);
     }
 
     public static void save(int count, List<String> names) throws IOException {
