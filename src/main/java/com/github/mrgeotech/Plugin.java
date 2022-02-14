@@ -3,21 +3,25 @@ package com.github.mrgeotech;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Plugin extends JavaPlugin implements Listener {
+public class Plugin extends JavaPlugin implements CommandExecutor {
 
     private int count;
     private Iterator<String> names;
@@ -31,51 +35,58 @@ public class Plugin extends JavaPlugin implements Listener {
             e.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
         }
-        Bukkit.getPluginManager().registerEvents(this, this);
+        Bukkit.getPluginCommand("start").setExecutor(this);
+        Bukkit.getPluginCommand("killvillagers").setExecutor(this);
         Objects.requireNonNull(Bukkit.getWorld("Novigrad")).getEntities().forEach(Entity::remove);
     }
 
-    @EventHandler
-    public void onJoin(PlayerSpawnLocationEvent event) {
-        if (Objects.requireNonNull(event.getSpawnLocation().getWorld()).getName().equalsIgnoreCase("Novigrad")) {
-            World world = event.getSpawnLocation().getWorld();
-            Plugin plugin = this;
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                for (int i = 0; i < 900; i++) {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                                Entity entity = world.spawnEntity(
-                                        new Location(world,
-                                                ThreadLocalRandom.current().nextDouble() * 600 + 500,
-                                                256,
-                                                ThreadLocalRandom.current().nextDouble() * 600 + 1000),
-                                        EntityType.VILLAGER
-                                );
-                                entity.setInvulnerable(true);
-                                if (!names.hasNext()) return;
-                                entity.setCustomName(names.next());
-                                entity.setCustomNameVisible(true);
-                            });
-                    count++;
-                }
-                for (int i = 0; i < 100; i++) {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        Entity entity = world.spawnEntity(
-                                new Location(world,
-                                        800,
-                                        256,
-                                        1300),
-                                EntityType.VILLAGER
-                        );
-                        entity.setInvulnerable(true);
-                        if (!names.hasNext()) return;
-                        entity.setCustomName(names.next());
-                        entity.setCustomNameVisible(true);
-                    });
-                    count++;
-                }
-                event.getPlayer().sendMessage(count + " entities");
-            }, 10, 10);
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) return true;
+        final Player player = (Player) sender;
+        if (label.equalsIgnoreCase("start")) {
+            if (player.getWorld().getName().equalsIgnoreCase("Novigrad")) {
+                Plugin plugin = this;
+                Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+                    for (int i = 0; i < 950; i++) {
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            Entity entity = player.getWorld().spawnEntity(
+                                    new Location(player.getWorld(),
+                                            ThreadLocalRandom.current().nextDouble() * 600 + 500,
+                                            256,
+                                            ThreadLocalRandom.current().nextDouble() * 600 + 1000),
+                                    EntityType.VILLAGER
+                            );
+                            entity.setInvulnerable(true);
+                            if (!names.hasNext()) return;
+                            entity.setCustomName(names.next());
+                            entity.setCustomNameVisible(true);
+                        });
+                        count++;
+                    }
+                    for (int i = 0; i < 50; i++) {
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            Entity entity = player.getWorld().spawnEntity(
+                                    new Location(player.getWorld(),
+                                            800,
+                                            256,
+                                            1300),
+                                    EntityType.VILLAGER
+                            );
+                            entity.setInvulnerable(true);
+                            if (!names.hasNext()) return;
+                            entity.setCustomName(names.next());
+                            entity.setCustomNameVisible(true);
+                        });
+                        count++;
+                    }
+                    player.sendMessage(count + " entities");
+                }, 10, 10);
+            }
+        } else {
+            player.getWorld().getEntities().forEach(Entity::remove);
         }
+        return true;
     }
 
     private Iterator<String> getNames() throws IOException {

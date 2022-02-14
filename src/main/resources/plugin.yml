@@ -3,3 +3,7 @@ version: '${version}'
 main: com.github.mrgeotech.Plugin
 api-version: 1.12
 authors: [ MrGeoTech ]
+
+commands:
+  start:
+  killvillagers:
