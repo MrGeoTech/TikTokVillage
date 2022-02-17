@@ -1,6 +1,7 @@
 package com.github.mrgeotech;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -48,29 +49,41 @@ public class Plugin extends JavaPlugin implements CommandExecutor {
             if (player.getWorld().getName().equalsIgnoreCase("Novigrad")) {
                 Plugin plugin = this;
                 Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                    for (int i = 0; i < 950; i++) {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            Entity entity = player.getWorld().spawnEntity(
-                                    new Location(player.getWorld(),
-                                            ThreadLocalRandom.current().nextDouble() * 600 + 500,
-                                            256,
-                                            ThreadLocalRandom.current().nextDouble() * 600 + 1000),
-                                    EntityType.VILLAGER
-                            );
-                            entity.setInvulnerable(true);
-                            if (!names.hasNext()) return;
-                            entity.setCustomName(names.next());
-                            entity.setCustomNameVisible(true);
-                        });
-                        count++;
-                    }
                     for (int i = 0; i < 50; i++) {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             Entity entity = player.getWorld().spawnEntity(
                                     new Location(player.getWorld(),
                                             800,
-                                            256,
+                                            230,
                                             1300),
+                                    EntityType.VILLAGER
+                            );
+                            entity.setInvulnerable(true);
+                            if (!names.hasNext()) return;
+                            String name = names.next();
+                            switch (name) {
+                                case "Zander":
+                                    name = ChatColor.RED + "" + ChatColor.BOLD + name;
+                                    break;
+                                case "MrGeoTech":
+                                    name = ChatColor.BLUE + "" + ChatColor.BOLD + name;
+                                    break;
+                                case "FourSeasonsHosting":
+                                    name = ChatColor.GREEN + "" + ChatColor.BOLD + name;
+                                    break;
+                            }
+                            entity.setCustomName(name);
+                            entity.setCustomNameVisible(true);
+                        });
+                        count++;
+                    }
+                    for (int i = 0; i < 950; i++) {
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            Entity entity = player.getWorld().spawnEntity(
+                                    new Location(player.getWorld(),
+                                            ThreadLocalRandom.current().nextDouble() * 300 + 650,
+                                            256,
+                                            ThreadLocalRandom.current().nextDouble() * 300 + 1150),
                                     EntityType.VILLAGER
                             );
                             entity.setInvulnerable(true);
